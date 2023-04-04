@@ -13,9 +13,11 @@
 #include <CoreFoundation/Corefoundation.h>
 #include <CoreGraphics/CGDisplayConfiguration.h>
 #include <CoreGraphics/CGWindow.h>
-#define NSBaseWindowLevel 0
-#define NSFloatingWindowLevel 5
-#define NSWindowStyleMaskFullScreen 16384
+// #define NSBaseWindowLevel 0
+// #define NSFloatingWindowLevel 5
+// #define NSWindowStyleMaskFullScreen 16384
+
+#import <AppKit/AppKit.h>
 #define NSPNGFileType 4
 
 #define kCGWindowListOptionIncludingWindow 8
@@ -462,6 +464,20 @@ void setIcon(const string &iconFile) {
                                 "sharedApplication"_sel),
                 "setApplicationIconImage:"_sel,icon);
 
+    @autoreleasepool {
+
+		NSMenu *menu = [[NSMenu alloc] init];
+		[menu setAutoenablesItems:NO];
+		NSString *quitTitle = [@"Quit " stringByAppendingString:[[NSProcessInfo processInfo] processName]];
+		NSMenuItem *quitMenuItem = [[NSMenuItem alloc] initWithTitle:quitTitle action:@selector(terminate:) keyEquivalent:@"q"];
+		NSMenu *quitMenu = [[NSMenu alloc] init];
+		[quitMenu addItem:[quitMenuItem autorelease]];
+		NSMenuItem *appMenu = [[NSMenuItem alloc] init];
+		[appMenu setSubmenu:[quitMenu autorelease]];
+		[menu addItem:[appMenu autorelease]];
+		[NSApp setMainMenu:[menu autorelease]];
+	}
+
     #elif defined(_WIN32)
     GdiplusStartupInput gdiplusStartupInput;
     ULONG_PTR gdiplusToken;
@@ -551,7 +567,7 @@ void setAlwaysOnTop(bool onTop) {
     gtk_window_set_keep_above(GTK_WINDOW(windowHandle), onTop);
     #elif defined(__APPLE__)
     ((void (*)(id, SEL, int))objc_msgSend)((id) windowHandle,
-            "setLevel:"_sel, onTop ? NSFloatingWindowLevel : NSBaseWindowLevel);
+            "setLevel:"_sel, onTop ? NSFloatingWindowLevel : NSNormalWindowLevel);
     #elif defined(_WIN32)
     SetWindowPos(windowHandle, onTop ? HWND_TOPMOST : HWND_NOTOPMOST,
                 0, 0, 0, 0, SWP_NOMOVE | SWP_NOSIZE);
