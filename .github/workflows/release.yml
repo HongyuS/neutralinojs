@@ -47,36 +47,11 @@ jobs:
       uses: vimtor/action-zip@v1
       with:
         files: ./bin/neutralino-mac_x64 ./bin/neutralino-mac_arm64 ./bin/neutralino-mac_universal
-        dest: './bin/neutralinojs-v${{github.event.inputs.version}}.zip'
-        
-    - name: Create Release Notes
-      run: |
-        chmod +x ./scripts/rz.py
-        ./scripts/rz.py create ${{github.event.inputs.version}}
-        
-    - name: Commit and Push Changelog
-      uses: EndBug/add-and-commit@v7.4.0
-      with:
-        default_author: github_actions
-        message: 'Update changelog for v${{github.event.inputs.version}}' 
-        add: 'CHANGELOG.md'
-        tag: v${{github.event.inputs.version}}
-        
-    - name: Create Branch
-      uses: peterjgrainger/action-create-branch@v2.0.1
-      with: 
-        branch: v${{github.event.inputs.version}}
-      env:
-        GITHUB_TOKEN: ${{ secrets.COMMIT_TOKEN }}
+        dest: './bin/neutralinojs-v${{github.event.inputs.version}}.zip' 
         
     - name: Create a GitHub release
       uses: ncipollo/release-action@v1
       with:
           tag: v${{github.event.inputs.version}}
           name: Neutralinojs v${{github.event.inputs.version}} released!
-          bodyFile: ./.tmprz/release_notes.md
           artifacts: './bin/neutralinojs-v${{github.event.inputs.version}}.zip'
-          
-    - name: Clean Release Notes
-      run: |
-        ./scripts/rz.py cleanup
