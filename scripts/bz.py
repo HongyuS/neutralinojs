@@ -46,7 +46,7 @@ def get_os_shortname():
     return osnames[BZ_OS]
 
 def get_compiler():
-    compilers = {'linux': 'g++', 'windows': 'cl', 'darwin': 'c++'}
+    compilers = {'linux': 'g++', 'windows': 'cl', 'darwin': '$CXX'}
     return compilers[BZ_OS] + ' '
 
 def get_latest_commit():
