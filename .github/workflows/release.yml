@@ -54,4 +54,4 @@ jobs:
           tag: v${{github.event.inputs.version}}
           name: Neutralinojs v${{github.event.inputs.version}} released!
           artifacts: "./bin/neutralinojs-v${{github.event.inputs.version}}.zip"
-          owner: 3Shain
+          owner: HongyuS
