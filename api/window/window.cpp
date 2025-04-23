@@ -554,8 +554,13 @@ pair<int, int> getPosition() {
 }
 
 void center(bool useConfigSizes = false) {
+    #if defined(__APPLE__)
+    // 使用原生 NSWindow center 方法居中窗口
+    ((void (*)(id, SEL))objc_msgSend)((id) windowHandle, "center"_sel);
+    #else
     pair<int, int> pos = __getCenterPos(useConfigSizes);
     window::move(pos.first, pos.second);
+    #endif
 }
 
 void setAlwaysOnTop(bool onTop) {
