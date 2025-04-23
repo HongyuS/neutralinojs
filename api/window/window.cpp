@@ -13,12 +13,8 @@
 #include <CoreFoundation/Corefoundation.h>
 #include <CoreGraphics/CGDisplayConfiguration.h>
 #include <CoreGraphics/CGWindow.h>
-// #define NSBaseWindowLevel 0
-// #define NSFloatingWindowLevel 5
-// #define NSWindowStyleMaskFullScreen 16384
 
 #import <AppKit/AppKit.h>
-#define NSPNGFileType 4
 
 #define kCGWindowListOptionIncludingWindow 8
 #define kCGWindowImageBoundsIgnoreFraming 1
@@ -613,7 +609,7 @@ bool snapshot(const string &filename) {
         ((id (*)(id, SEL))objc_msgSend)("NSBitmapImageRep"_cls, "alloc"_sel);
     ((void (*)(id, SEL, CGImageRef))objc_msgSend)(screenshot, "initWithCGImage:"_sel, imgRef);
     id screenshotData =
-        ((id (*)(id, SEL, int, id))objc_msgSend)(screenshot, "representationUsingType:properties:"_sel, NSPNGFileType, nullptr);
+        ((id (*)(id, SEL, int, id))objc_msgSend)(screenshot, "representationUsingType:properties:"_sel, NSBitmapImageFileTypePNG, nullptr);
     bool status = ((bool (*)(id, SEL, id, bool))objc_msgSend)(screenshotData, "writeToFile:atomically:"_sel, 
             ((id(*)(id, SEL, const char *))objc_msgSend)("NSString"_cls, "stringWithUTF8String:"_sel, filename.c_str())
     , true);
