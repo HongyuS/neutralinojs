@@ -1,59 +1,57 @@
-
 name: Create release
-on: 
+on:
   workflow_dispatch:
-    inputs: 
-      version: 
-        type: text
-        description: 'Version number Eg: 4.2.0' 
+    inputs:
+      version:
+        type: string
+        description: "Version number Eg: 4.2.0"
 permissions:
   contents: write
 jobs:
-
   build-darwin:
     runs-on: macos-latest
     steps:
-    - name: Checkout
-      uses: actions/checkout@v2
-    - name: Build
-      run: |
-        export MACOSX_DEPLOYMENT_TARGET=11.0
-        export CXX=clang++\ -ObjC++ 
-        ./scripts/bz.py --target_arch x64
-        ./scripts/bz.py --target_arch arm64
-        lipo bin/neutralino-mac_x64 bin/neutralino-mac_arm64 -create -output bin/neutralino-mac_universal
-    - name: Upload Artifacts
-      uses: actions/upload-artifact@v2
-      with:
-        name: darwin_binary
-        path: |
-          bin/neutralino-mac_x64
-          bin/neutralino-mac_arm64
-          bin/neutralino-mac_universal
-        
+      - name: Checkout
+        uses: actions/checkout@v3
+      - name: Build
+        run: |
+          export MACOSX_DEPLOYMENT_TARGET=11.0
+          export CXX=clang++\ -ObjC++ 
+          ./scripts/bz.py --target_arch x64
+          ./scripts/bz.py --target_arch arm64
+          lipo bin/neutralino-mac_x64 bin/neutralino-mac_arm64 -create -output bin/neutralino-mac_universal
+      - name: Upload Artifacts
+        uses: actions/upload-artifact@v4.4.0
+        with:
+          name: darwin_binary
+          path: |
+            bin/neutralino-mac_x64
+            bin/neutralino-mac_arm64
+            bin/neutralino-mac_universal
+
   create-release:
     needs: [build-darwin]
     runs-on: ubuntu-latest
     steps:
-    - name: Checkout 
-      uses: actions/checkout@v2
+      - name: Checkout
+        uses: actions/checkout@v3
 
-    - name: Download Darwin build artifacts 
-      uses: actions/download-artifact@v2
-      with:
-        name: darwin_binary
-        path: ./bin
-        
-    - name: Create Release zip
-      uses: vimtor/action-zip@v1
-      with:
-        files: ./bin/neutralino-mac_x64 ./bin/neutralino-mac_arm64 ./bin/neutralino-mac_universal
-        dest: './bin/neutralinojs-v${{github.event.inputs.version}}.zip' 
-        
-    - name: Create a GitHub release
-      uses: ncipollo/release-action@v1
-      with:
+      - name: Download Darwin build artifacts
+        uses: actions/download-artifact@v4.1.7
+        with:
+          name: darwin_binary
+          path: ./bin
+
+      - name: Create Release zip
+        uses: vimtor/action-zip@v1
+        with:
+          files: ./bin/neutralino-mac_x64 ./bin/neutralino-mac_arm64 ./bin/neutralino-mac_universal
+          dest: "./bin/neutralinojs-v${{github.event.inputs.version}}.zip"
+
+      - name: Create a GitHub release
+        uses: ncipollo/release-action@v1
+        with:
           tag: v${{github.event.inputs.version}}
           name: Neutralinojs v${{github.event.inputs.version}} released!
-          artifacts: './bin/neutralinojs-v${{github.event.inputs.version}}.zip'
+          artifacts: "./bin/neutralinojs-v${{github.event.inputs.version}}.zip"
           owner: 3Shain
